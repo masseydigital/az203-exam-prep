@@ -21,7 +21,7 @@ The _Azure Cloud Shell_ allows you to run commands in bash or powershell within 
 ## Azure Batch
 A batch job is any job that needs to be run multiple times.  i.e. simulations, weather predictions, rendering a movie, etc.  An Azure batch job will manage creating resources such as VM's to complete the job.  To use Azure Batch, you need an Azure Batch account which is separate from your Azure Subscription.  
 
-[Azure Batch Samples] (https://github.com/Azure-Samples/azure-batch-samples)
+[Azure Batch Samples](https://github.com/Azure-Samples/azure-batch-samples)
 
 The settings json file in the project tells Azure what resources to use for the batch, and the account settings json file tells Azure what account settings to use.
 
@@ -40,6 +40,6 @@ _Kubernetes dashboard_ can be installed locally to visualize your Kubernetes clu
 
 To create _Docker_ containers you need to install Docker onto your local machine.  [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/) will allow us to do just that.  Docker containers run in a virtual box. You can use the _docker images_ command to view the images that are in your docker container.
 
-The _Container Registry_ resource in Azure is a place that you can store containers which users can pull containers from (similar to how Github holds code).  They have different SKUs that have different capabilities for respective prices.  To tag containers for your container registry, you can use the _docker tag <app-name> <container registry name>/<app name>:<v#>_ command.  To push the docker image, you can use the _docker push <container registry name>/<app name>:<v#>_ command.
+The _Container Registry_ resource in Azure is a place that you can store containers which users can pull containers from (similar to how Github holds code).  They have different SKUs that have different capabilities for respective prices.  To tag containers for your container registry, you can use the _docker tag [app-name] [container registry name]/[app name]:[v#>_ command].  To push the docker image, you can use the _docker push [container registry name]/[app name]:[v#]_ command.
 
 [Code Samples](https://github.com/Azure-Samples/aks-dotnet-manage-kubernetes-cluster)
