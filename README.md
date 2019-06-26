@@ -75,3 +75,8 @@ The _Notification Hub Dash_ allows you to visualize the mobile notifications you
 There is a Mobile App service that is provided on Azure.  Mobile apps are very similar to web apps, but also include a mobile app section.  This section includes things such as databases, apis, and tables.  
 
 [Code Samples](https://github.com/Azure-Samples/event-hubs-dotnet-user-notifications)
+
+## API Apps
+Api apps are created the same way as web apps.  API are web apps that don't have a user interface.  There are two features that distinguish api apps: Cross-Origin-Resource- Sharing (CORS) and API definitions.  CORS limits access to who can use the API.  SwashBuckle and Swagger allow you to build API documentation for your api. You can post the url/swagger to the API definition to tie the API defintion to the App Service.
+
+[Code Samples](https://github.com/Azure-Samples/dotnet-core-api)
