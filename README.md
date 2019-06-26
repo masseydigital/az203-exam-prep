@@ -64,3 +64,14 @@ _Web Jobs_ are back end jobs that can be run in Azure.   In order for a web job 
 The _Monitoring_ settings of your web apps allow you collect data and troubleshoot issues when running your web app.  _Diagnostic Logs_ allow you to generate logs for your web application.  Some log files will require you to have a storage account.  When you create logs, you can select how long you hold onto the logs in Azure.  You can also stream logs by connecting to the log streaming service.
 
 [Code Samples](https://github.com/Azure-Samples/app-service-web-dotnet-get-started)
+
+## Azure Mobile Apps
+Mobile apps in the context of Azure is the backend services that the front end applications on the phone need to use.  This also includes _notification hubs_.  Notification hubs you _notification workspaces_.  
+
+There are 3 tiers of pricing tiers for mobile notifications.  F1 is free, up to 1M pushes and can be used to 500 devices.  B1 allows 10M pushes and 200k Active Devices.  S1 has 10M pushes and 10M active devices.  The S1 tier also has a lot of extra included features including telemetry, bulk operations, scheduled pushes, and multi-tenancy.  
+
+The _Notification Hub Dash_ allows you to visualize the mobile notifications you are managing.  You can modify settings for different manufacturers including Apple, Google, Windows, Windows Phone, Amazon, and Baidu.
+
+There is a Mobile App service that is provided on Azure.  Mobile apps are very similar to web apps, but also include a mobile app section.  This section includes things such as databases, apis, and tables.  
+
+[Code Samples](https://github.com/Azure-Samples/event-hubs-dotnet-user-notifications)
