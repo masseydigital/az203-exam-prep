@@ -80,3 +80,15 @@ There is a Mobile App service that is provided on Azure.  Mobile apps are very s
 Api apps are created the same way as web apps.  API are web apps that don't have a user interface.  There are two features that distinguish api apps: Cross-Origin-Resource- Sharing (CORS) and API definitions.  CORS limits access to who can use the API.  SwashBuckle and Swagger allow you to build API documentation for your api. You can post the url/swagger to the API definition to tie the API defintion to the App Service.
 
 [Code Samples](https://github.com/Azure-Samples/dotnet-core-api)
+
+## Function Apps
+Functions apps have the choice between app service plans and consumption plans.  The app service plan is similar to the previous app service plan.  The consumption plan means that you are only charged when the function is run.  App service plans must run on the same OS, i.e. a Windows plan will not work with a Linux plan.  For the windows plan you can run .Net, Python, and Java.  Functions need a storage account to be used.
+
+When you create functions, you can use Visual studio, VS Code, any other edtor, or in-portal.  The most common hooks for function apps is Webhook + API, Timer, and other templates.  Every function must have 1 trigger and can only have 1 trigger.  You can also select the inputs and outputs for the function.  An example of an output is a blob containing a string.
+
+_Durable Functions_ are functions which are able to perform more complex functionality.  With durable functions you can create chains of functions that are more complicated than normal chains of functions.  There are different application patterns that can be used to design durable functions.  Some of these include Chaining, Fan-Out/Fan-In, Async Http APIs, Monitoring, and Human Interaction.
+
+Azure functions are also an option in Visual Studio.  The benefit of using visual studio instead of the in-app editor is that you can use source control and other code management to share and keep your code up.  Once you complete your azure function in visual studio you can publish it.
+
+[Code Samples](https://github.com/Azure-Samples/durablefunctions-apiscraping-dotnet)
+
