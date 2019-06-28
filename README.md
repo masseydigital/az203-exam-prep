@@ -92,3 +92,23 @@ Azure functions are also an option in Visual Studio.  The benefit of using visua
 
 [Code Samples](https://github.com/Azure-Samples/durablefunctions-apiscraping-dotnet)
 
+## Azure Storage Accounts
+_Azure storage accounts_ store data inside of Azure.  Many resources available in Azure will hvae options for creating storage accounts in their options.  The name of your storage account must be unique across all of Azure.  It is best practice to store files near your targeted users when selecting a location for your storage account.  StorageV2 only support _Azure Resource Manager_ data model.  Azure also supports the older storage model. 
+
+ By default you get 3 copies of your storage in a _locally-redundant storage_.  _Zone-redundant storage_ will store 3 copies in your zone.  Both of these tiers are free by default.  _Geo-redundant storage_ stores your data across geolocations for an additional price.  _Read-access geo-redundant storage_ functions similarly to geo-redundant storage, but is read-access.
+
+ The access tier is either _cool_ or _hot_.  Hot storage means that you are implementing standard read/write and are able to access it instantly.  With cool storage, you are guaranteeing that you will use the storage for 30 days, but you don't need instant access to the data.  It has higher cost for access and lower cost for storage.  There is a also a third option called _archive_ that can be used in applications to store data which will not be accessed for 180 days.
+
+ You can add additional security to a storage account by putting it on a virtual network that can only be accessed by other resources on the network.
+
+ _Tagging_ allows you to assign values to resources which group resources into logical groupings.
+
+ There are 4 services available in a standard storage account: Blobs, Files, Tables, and Queues.
+ Blobs: REST-based object storage for unstructured data
+ Files: Files shares that use the standard SMB 3.0 protocol
+ Tables: Tabular data storage
+ Queues: FIFO data type that scales app according to traffic
+
+ Storage tables contain tabular data that can be accessed by url.  To start working with tables, use the _Nuget Package Manager_ to download the WindowsAzure.Storage package.  You can use functions inside of the package to create and commit tables to Azure.  Once you've committed data you can build queries to get data from your table.
+
+ [Code Samples](https://github.com/Azure-Samples/storage-table-dotnet-getting-started)
