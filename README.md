@@ -125,3 +125,41 @@ The quick start tab for CosmosDB will help you easily start creating a new resou
 To get started with developing for CosmosDB in Visual Studio, use the Nuget Package Manager to install Microsoft.Azure.[databaseType] where databaseType is the type of database that was selected when the database was created in Azure (i.e. for SQL, select Microsoft.Azure.DocumentDB).  Browsing ComsoDB in NPM will show you other Third Party libraries to help you manage your CosmosDB more efficiently.
 
 _Data Explorer_ inside CosmosDB allows you to visualize your table data.  When you uploade Table Data to CosmosDB, it will attach several additional fields to your data entry: id, _rid, _self, _etag, _attachments, and _ts.
+
+[Code Samples](https://github.com/Azure-Samples/dotnet-cosmosdb-quickstart)
+
+## Consistency
+_Consistency_ in data for Azure describes the order and the timing that data is available to users.  There are different levels that you can choose for your specific application.  Consistency is available for CosmosDB, but not regular storage accounts.
+
+_Strong:_ means that data replication happens near instantaneously on all regions servers.  A downside of this form of consistency is that you have to wait for data to be replicated before being able to read it.
+
+_Boundless Staleness:_ introduces a delay from the host region to other secondary regions.  It is recommended for applications featuring group collaboration and sharing, stock ticker, publish-subscribe queueing, etc.
+
+_Session:_ depending on the session of the user, they will be guaranteed consistency.  This means that certain regions may be introduced a delay.
+
+_Consistent Prefix:_ data will be displayed in the right order, but not necesarily with the same lag.
+
+_Eventual:_ This is the weakest consistency.  There is no guarantee on order.  An example of this is retweets, likes, or non-threaded comments.
+
+## Azure SQL Database
+There are a number of options for creating SQL Databases within Azure.  _Azure SQL Database_ is the recommended SQL database for many common workflows in Azure.  SQL Server 2017 with Windows Server 2016 running on a VM is another option which gives you much more control over the hardware.  _SQL Data Warehouse_ is an option if you have _Data Lake_ sizes of data that you need to manage.  There are also several Software as a Service (SAAS) database solutions available in Azure including MySQL, PostgresSQL, and MariaDB.
+
+An Azure SQL database has a database server and the database itself.  You have the option of pre-loading data into a new database such as the AdventureWorksLT sample database.  You have the option of backing up your database.  Your database must live in a server.  You have the option of creating a new server if you do not have one already.  The server name has the format _[Server Name].database.windows.net_.  You must create an admin username and password for your server, and select a region that the database will live in.
+
+An _elastic pool_ is an option if you have multiple databases with similar functionality.  I.e. 20 databases that share a central resource server.  
+
+_Pricing_ for an SQL database is based on performance and size, or based on vCore performance.  The three options are Basic (5 DTU, 2 GB max), Standard (10-3000 DTU, 250 GB max), and Premium (125-4000 DTU, 1 TB max) and is matched to a _Database Transaction Unit (DTU)_.  The premium plan also includes additional options.  DTU's are linear (100 DTU's is 100x better performance).
+
+_VCore Performance_ pricing is based on number of cores and performance as well as Provisioned or Serverless technology.  There are three options for VCore pricing: General Purpose, HyperScale, and Business Critical.  There are options for Gen4 or Gen5 cores, number of vCores, and Max Data Size.  Gen4 allows 1-24 vCores, and 1GB-1TB of storage.  Gen5 allows for 2-80 vCores, and 1GB-4TB of data.  _Serverless_ resources are auto-scaled to your usage, and only work with Gen5.  Hyperscale purchasing also includes the number of replicas that you would like created.
+
+The _Query Editor_ allows you to visualize data that is in your SQL database.  It contains an inline interface that you can use to develop queries for your database.
+
+**For backup servers, you need to have another server account in that region.  Azure will handle the replication between servers in different regions.**
+
+You can select your servers firewall by selecting _Show firewall settings_ on the overview tab of your server.  Doing so will bring your the firewalls configuration screen.  The default firewall allows services from Azure to access, and requires you to white list any other additional ips.  You can add your local ip by clicking Add Client IP in the top toolbar.  This is required for you to be able to access the server/databases locally.
+
+The _SQL Server Management Studio (SSMS)_ is a management software that helps you access/modify databases running in the cloud.  You can create new Tables and Queries using this software.  Logging into your server through Azure should reflect SSMS updates after you make and commit them.
+
+The namespace in Visual Studio for SQL Database is _System.Data.SqlClient_.  The connection string for connecting to the SQL server is located under the settings section, Connection String option.  There are different options for the connection type including ADO.Net, JDBC, ODBC, and PHP.  There are fields in the connection string that you will have to enter including {username} and {password}.  You can run SQL commands against your database by using the SQLCommand method, passing in your command string and connection.
+
+[Code Samples](https://github.com/Azure-Samples/dotnet-sqldb-tutorial)
