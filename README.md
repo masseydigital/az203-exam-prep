@@ -163,3 +163,18 @@ The _SQL Server Management Studio (SSMS)_ is a management software that helps yo
 The namespace in Visual Studio for SQL Database is _System.Data.SqlClient_.  The connection string for connecting to the SQL server is located under the settings section, Connection String option.  There are different options for the connection type including ADO.Net, JDBC, ODBC, and PHP.  There are fields in the connection string that you will have to enter including {username} and {password}.  You can run SQL commands against your database by using the SQLCommand method, passing in your command string and connection.
 
 [Code Samples](https://github.com/Azure-Samples/dotnet-sqldb-tutorial)
+
+## Blob Containers
+_Blobs_ are REST-based object storage for unstructured data.  They are basically a container that you can throw files into.
+
+There are three access levels that you can give blob containers: Private, Blob, and Container.  
+
+Hitting the _Upload_ button will give you the option to upload a file to the container.  You can set the authentication type when you upload.  You can also chnage the blob type, and upload images to a folder (this folder is a virtual folder).  
+
+To manipulate the blob storage files, you can download _AzCopy_.  AzCopy provides an api for server side copying in the command line.  _AzCopy /?_ gives you examples of all of the commands that you can use. The first parameter of AzCopy is /Source -- you can get the source url from the resource.  The _/Dest_ command is the location that you want to place the file. The _/Pattern_ command is the pattern that you want to copy files from.  You can use keys or Secure Access Signatures to access blob containers.  The _/SourceKey_ is the source authentication key used for your container.  The _/DestKey_ is the destination key for the destination location.   _/SyncCopy_ copies an image locally first before uploading it to the destination.  
+
+_Acquire Lease_ is a lock on the blob container.  You must provide the _Lease ID_ to access files in a leased blob container.  Leased files cannot be deleted until Break Lease is clicked or the api calls the breaking command.
+
+_Storage Access Tiers_ change how a file can be downloaded.  A Hot access type means the file is immediately available.  A Cool access type means that the file is not immediately available.  i.e. for backups.  Changing your access tier changes your cost.  Making containers cool (30 days) makes the storage cheaper and the access more expensive.  Archive access tier is even longer term storage (180 days).  Hot storage is about twice as expensive as cool, but half as much more for write operations than cool or archive.  Read operations are about half as much for hot items and a large amount more for archived access. Data retrieval is free for hot items, $0.01/GB for cool and $0.02 for archived items.  
+
+[Code Samples](https://github.com/Azure-Samples/storage-blob-dotnet-getting-started)
