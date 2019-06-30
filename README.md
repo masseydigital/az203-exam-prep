@@ -112,3 +112,16 @@ _Azure storage accounts_ store data inside of Azure.  Many resources available i
  Storage tables contain tabular data that can be accessed by url.  To start working with tables, use the _Nuget Package Manager_ to download the WindowsAzure.Storage package.  You can use functions inside of the package to create and commit tables to Azure.  Once you've committed data you can build queries to get data from your table.
 
  [Code Samples](https://github.com/Azure-Samples/storage-table-dotnet-getting-started)
+
+ ## CosmosDB
+_CosmosDB_ is a fully managed, globally distributed, multi=model database service.  Azure's CosmosDB provides an enterprise grade Table experience.  It scales globally for services, and is recommended over a storage account for Enterprise level apps.  To use CosmosDB you must create a Database account which is unique across Azure.  CosmosDB has it's own SLA which in the tutorial is a 99.999 SLA.  
+
+The API that you choose for your account determines how your data is stored.  Some data formats are SQL, MongoDB, Cassandra, Azure Table, and Gremlin (graph).  You can select options for geo-redundancy and multi-region writes.  You can set your CosmosDB to be on a Virtual Network to determine which resources have access to your CosmosDB database.
+
+Pricing for CosmsoDB includes how much storage you are using and how often you are accessing the data.
+
+The quick start tab for CosmosDB will help you easily start creating a new resource.  The Collections section allows you to add new collections to your resource.  When you add a new collection, you can limit throughput by checking the provision database throughput, and setting a level that you are comfortable with.  Throughput can also be set at the collection level.
+
+To get started with developing for CosmosDB in Visual Studio, use the Nuget Package Manager to install Microsoft.Azure.[databaseType] where databaseType is the type of database that was selected when the database was created in Azure (i.e. for SQL, select Microsoft.Azure.DocumentDB).  Browsing ComsoDB in NPM will show you other Third Party libraries to help you manage your CosmosDB more efficiently.
+
+_Data Explorer_ inside CosmosDB allows you to visualize your table data.  When you uploade Table Data to CosmosDB, it will attach several additional fields to your data entry: id, _rid, _self, _etag, _attachments, and _ts.
