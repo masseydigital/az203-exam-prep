@@ -178,3 +178,21 @@ _Acquire Lease_ is a lock on the blob container.  You must provide the _Lease ID
 _Storage Access Tiers_ change how a file can be downloaded.  A Hot access type means the file is immediately available.  A Cool access type means that the file is not immediately available.  i.e. for backups.  Changing your access tier changes your cost.  Making containers cool (30 days) makes the storage cheaper and the access more expensive.  Archive access tier is even longer term storage (180 days).  Hot storage is about twice as expensive as cool, but half as much more for write operations than cool or archive.  Read operations are about half as much for hot items and a large amount more for archived access. Data retrieval is free for hot items, $0.01/GB for cool and $0.02 for archived items.  
 
 [Code Samples](https://github.com/Azure-Samples/storage-blob-dotnet-getting-started)
+
+## Azure Authentication
+The central service that deals with authentication and identity is _Azure Active Directory_.  _Active Directory_ is a directory service that Microsoft developed for Windows domain networks.   
+
+_Azure AD Connect_ can be used to sync an on-premise active directory with an Azure Active Directory.  You can use a mixture of synced and non-synced resources to meet your needs.  
+
+To create a new Active Directory account, go to Create a Resource, and search Active Directory.  Once you find Azure Active Directory, you will be taken to a Create directory screen.  The options that you have to fill out are Organization Name, Initial Domain Name, and the Country or Region.  The default domain name is [doman name].onmicrosoft.com.
+
+You can change your active directory by going to the account icon in the upper right and selecting your active directory account.  When you select it, it will look like a new Azure account in the portal.
+
+[AzureADQuickStarts Github](https://github.com/AzureADQuickStarts/)
+
+**To use active directories in a web app, you must change it from a single tenant application to a multi-tenant application.**
+**The above comment is not longer true for the new Azure stack.  Instead to follow the tutorial, go to authentication and change the supported account type to Acconts in any organizational directory
+
+Azure also supports multi-factor authentication by default. When you click the sign-in button on the test app after enabling multi-factor authentication, you will get a page asking for an additional authentication method to ensure that the user is who they say they are.
+
+[Code Samples](https://github.com/Azure-Samples/active-directory-dotnet-native-desktop)
