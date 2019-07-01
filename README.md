@@ -196,3 +196,14 @@ You can change your active directory by going to the account icon in the upper r
 Azure also supports multi-factor authentication by default. When you click the sign-in button on the test app after enabling multi-factor authentication, you will get a page asking for an additional authentication method to ensure that the user is who they say they are.
 
 [Code Samples](https://github.com/Azure-Samples/active-directory-dotnet-native-desktop)
+
+## Azure Access Control
+Rule Based Access Control (RBAC): Controls access to resources through a set of rules.
+
+Best practice is to give members the minimum access they need to perform their job function.
+
+In Azure, access control is managed through the Acess Control (IAM) resource.
+
+You can add roles through the Add role assignment option.  There are dozens of different options for roles that users can be assigned to.  Owner is the highest level of access control.  A lot of resources in Azure have their own specific permissions.  I.e. SQL DB Contributor.  You can also create your own custom roles.
+
+_Shared Access Signatures_ are URIs that grant access to resources without needing to create an account on Azure Active Directory.  Azure provides two keys to ensure that your applications can run at any time.  There are several options avaialble for SASs including the storage type, the level of access, and the different abilities the user has i.e. read, write, delete, etc.  Once all options are entered, you can generate a SAS and a connection string.  This will generate a SAS token.
