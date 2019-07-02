@@ -207,3 +207,27 @@ In Azure, access control is managed through the Acess Control (IAM) resource.
 You can add roles through the Add role assignment option.  There are dozens of different options for roles that users can be assigned to.  Owner is the highest level of access control.  A lot of resources in Azure have their own specific permissions.  I.e. SQL DB Contributor.  You can also create your own custom roles.
 
 _Shared Access Signatures_ are URIs that grant access to resources without needing to create an account on Azure Active Directory.  Azure provides two keys to ensure that your applications can run at any time.  There are several options avaialble for SASs including the storage type, the level of access, and the different abilities the user has i.e. read, write, delete, etc.  Once all options are entered, you can generate a SAS and a connection string.  This will generate a SAS token.
+
+## Secure Data
+Azure storage is encrypted by default at REST through Secure Service Encryption.  You cannot turn off Encryption, but you can use your own keys.  If you transport your file to another application and out of Azure you will be transferring the file unencrypted.  You can encrypt on transport by going to the Configuration tab in Settings.
+
+Servers are encrypted wtih _Transparent Data Encryption_ setting.  Like with storage, you can choose to use your own encryption key.  At the database level, they are also encrypted with Transparent Data Encryption.  Databases have the option to not be encrypted.
+
+_Azure Key Vault_ allows you to create and store keys for the security of your data.  There are two plans that can be selected for Azure Key Vaults: Standard and Premium.  The premium version uses a hardware solution to generate keys.  You can restrict key vaults to virtual networks.  Key vaults can store keys, certificates, and certificates.  You can version your keys to maintain an archive of keys, secreate, and certificates.  You can call these credentials through your .Net code.
+
+[Code Samples](https://github.com/Azure-Samples/key-vault-dotnet-manage-key-vaults)
+
+## Scaling Apps & Services
+_Scaling_ refers to an application changing the amount of resources available based on user or statistical demand.  This can happen both manually and automatically.  To scale automatically, you cannot use the Basic plan.
+
+_Scale Up/Down_ means moving up or down to a more expensive or less expensive plan.  
+
+_Scaling Out_ referes to adding more instances of a resources to solve demand.
+
+_Autoscaling_ allows you to scale based on a set of rules set in Azure.  The most common type of auto-scaling is based on a metric.  There are several different metric sources that can be selected as source to scale on.  You also have several metric types that you can select to scale a resource off of.  You can set a minimum and maximum scale to ensure that you are utilizing the correct amount of resources.  In addition to setting rules that ratchet up, you should also set rules to ratchet down to ensure you are able to recover from increases/decreases in traffic.
+
+_Virtual Machine Scale Sets_ is a scaling solution for virtual machines (infrastructure as a service).  Autoscaling with VM's can change the number of VM's based on CPU thresholds.
+
+_Transient Faults_ are faults that occur through the usage of cloud computing.  Some things that you can do to combat transient faults: 1) Retry/back-off logic: if an action fails, submit it again, 2) Don't tightly couple applications; use queues, databases, and other messaging systems, 3) expect that api calls will not always work, and handle errors gracefully.
+
+[Code Samples](https://github.com/Azure-Samples/app-service-dotnet-scale-web-apps)
