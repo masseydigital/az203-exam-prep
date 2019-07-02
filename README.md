@@ -231,3 +231,13 @@ _Virtual Machine Scale Sets_ is a scaling solution for virtual machines (infrast
 _Transient Faults_ are faults that occur through the usage of cloud computing.  Some things that you can do to combat transient faults: 1) Retry/back-off logic: if an action fails, submit it again, 2) Don't tightly couple applications; use queues, databases, and other messaging systems, 3) expect that api calls will not always work, and handle errors gracefully.
 
 [Code Samples](https://github.com/Azure-Samples/app-service-dotnet-scale-web-apps)
+
+## Caching and Content Delivery Networks
+_Redis_ is an open source application that is used for caching content in-memory (nothing is written in memory).  Redis is considered to be a back-end caching method.  A new Redis Cache will have a DNS; [DNS Name].redis.cache.windows.net .  There are different pricing tiers based on the size as well as many different additional options.  Redis is used for short term storage that your users can use to quickly access data.  
+
+You can use Redis in .Net with the NPM package Microsoft.Azure.Management.Redis (official) or StackExchange.Redis(Third Party, industry standard).  Azure provides a StackExchange Redis key by default.  In addition to strings, you can store geospatial data, hash keys, lists, etc.
+
+Microsoft supports _Content Delivery Networks (CDNs) in Azure.  A CDN sits in front of a website, takes anything that doesn't change in the web-page, and store it closer to the user to speed up delivery, i.e. if a user requests 1000 resources per minutes, can get down to 100 per minute by using a CDN.  There are two components two a CDN: Profile and the Endpoint.  A CDN runs on a global scale.  There are 3 companies that provide CDN resources in Azure.  Microsoft, Verizon, and Akamai.  Pricing is standard across the board for the three companies with Verizon having a premium tier.  
+
+An _endpoint_ represents the location that is used to access files.  Endpoints for CDNs in Azure have the url [endpoint name].azureedge.net . The files can live in storage, cloud service, web app, or custom origin.  You will also select the origin hostname.  You can purge the CDN if you create a new application to use your CDN.  Another common practice is to put the version number in the file name.  The users browser contributes to the savings in using a CDN.  Using a CDN saves on pricing and performance.
+
