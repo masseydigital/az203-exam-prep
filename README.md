@@ -241,3 +241,22 @@ Microsoft supports _Content Delivery Networks (CDNs) in Azure.  A CDN sits in fr
 
 An _endpoint_ represents the location that is used to access files.  Endpoints for CDNs in Azure have the url [endpoint name].azureedge.net . The files can live in storage, cloud service, web app, or custom origin.  You will also select the origin hostname.  You can purge the CDN if you create a new application to use your CDN.  Another common practice is to put the version number in the file name.  The users browser contributes to the savings in using a CDN.  Using a CDN saves on pricing and performance.
 
+## Monitoring and Logging
+_Azure Monitor_ provides a central location for collecting and monitoring logs for your Azure resources.  You can create new diagnostic settings to choose what information is stored and how long to store it.
+
+_Guest Level Monitoring_ is an enabled service that pulls the host level metrics from your virtual machines, i.e. CPU, storage, etc.
+
+You can store your logs elsewhere using the _Sinks_ tab.
+
+Function app logs get stored in application insights.
+
+There is a concept in Azure called _Analytics Workspace_.  Workspaces have their own subscription to bin your analytics data.
+
+## Consuming Azure Services
+_Logic Apps_ are connectors between different services.  It is a workflow application.  When you create a logic app, you get taken to the logic app designer.  There are a ton of templates that you can use to quickly set-up functions.  If this, then that (IFTT).  An example of a logic app is sending an email each time Bill Gates posts a tweet.  Just like function apps, Logic Apps require a trigger.  
+
+_Azure Search_ provides a search service that can be used within your web application.  Azure search services have a url with the form [search name].search.windows.net.  There are different options for pricing for Azure search: Free, Basic, and Standard.  
+
+_API Management_ provides a front end to your api to protect it from malicious use.  It is an API gateway and developer portal that can provide api documentation, throttle/quota api calls, monitor api health, etc.  There are various pricing plans that you can select: developer, basic, standard, premium, and consumption.  You can point your created api to the different types of apps that you can create in Azure.
+
+There are a couple of ways to send messages between apps: _Queues_ and _Events_.  Azure can create events through _Event Hubs_ and _Event Grids_.  
