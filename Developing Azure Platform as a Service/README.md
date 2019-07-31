@@ -1,4 +1,4 @@
-# Develop Azure Infrastructure as a Service Computer Solution (20-25%)
+# Develop Azure Platform as a Service Computer Solution (20-25%)
 
 ## Create Azure App Service Web Apps
 

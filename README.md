@@ -1,5 +1,15 @@
 # AZ-203 Exam Prep Course Notes
-This is my course notes repo for AZ-203 Developing Solutions for Microsoft Azure Exam Prep.
+This is my course notes repo for AZ-203 Developing Solutions for Microsoft Azure Exam Prep.  The structure of this repository is all of the course notes located inside of this repo for the Udemy course and then each section of the exam will have examples where I implemented a solution to meet the objective.  The solutions will either be custom solutions related to projects that I'm interested in, or solutions that Microsoft, or another third-party has suggested.
+
+The sections of the Exam are:
+1) Develop Azure Infrastructure as a Service (10-15%)
+2) Develop Azure Platform as a Service Compute Solutions (20-25%)
+3) Develop for Azure Storage (15-20%)
+4) Implement Azure Security (10-15%)
+5) Monitor, Troubleshoot, and Optimize Solutions (10-15%)
+6) Connect to and Consume Azure adn Third-Party Services (20-25%)
+
+# Udemy Course Notes
 
 ## Virtual Machines
 A _Virtual Machine (VM)_ is essentially an instance of a computer that includes its own memory, ram, OS, etc.  Infrastructure as a Service (IAAS).  Can use SSH or RDP to control remotely.  Each Azure VM has its own pricing plan which bases with per second pricing, and also has yearly pricing plans.  Some high performance VM's are blocked by default to protect the user from purchasing something that costs a lot of money.
@@ -26,6 +36,8 @@ A batch job is any job that needs to be run multiple times.  i.e. simulations, w
 The settings json file in the project tells Azure what resources to use for the batch, and the account settings json file tells Azure what account settings to use.
 
 _Batch Explorer_ allows you to visualize batch jobs running.
+
+[Code Samples](https://github.com/Azure-Samples/batch-dotnet-manage-batch-accounts)
 
 ## Azure Containerized Solutions / Azure Kubernetes Services (AKS)
 _Containers_ are a mid-way point between IAAS and PAAS.  It is a standard unit of software that packages up code and all of its dependencies so that the application can run quickly between different computing environments.  
