@@ -3,13 +3,65 @@
 ## Develop an App Service Logic App
 
 ### Create a Logic App
-1) Create a logic app
-2) Choose a connector and a trigger, i.e. Recurrence, every 24 hours
 
+A _business process_ is a sequence of tasks that produce a specific outcome.  The result might be a decision, some data, or a notification.
+
+_Azure Logic Apps_ is a cloud service that automates the execution of your business processes.  You use a tool called the _Logic Apps Designer_ to arrange pre-made components into the sequence that you need.  You can connect to hundreds of different pre-built components when you use Azure.
 
 ### Create a Custom Connector for Logic Apps
 
+A _connector_ is a component that provides an interface to an external service.  For example, the Twitter connector allows you to send and retrieve tweets.  Connectors work by using the external service's REST or SOAP API to do work.
+
+YOu can write custom connectors to access services that don't have pre-built connectors.  Those services must have a REST or SOAP API. 
+
+To create the custom connector, you first generate an OpenAPI or Postman description of the API.  You then use that API description to create a Custom Connector resource in Azure portal.
+
+Once you create your new connector, you can share it with other people in your organization, or submit it to Microsoft for certification.  If Microsoft certifies your connector, it will be included in the set of connectors available to all users.
+
+_Trigger_: an event that occurs when a specific set of conditions are satisfied.  Triggers activate automatically when conditions are met.  
+
+_Action_: an operation that executes a task in your business process.  
+
+_Connector_: container for related triggers and actions.
+
+_Control Actions:_ allow you to perform different functions based on an input.  _Condition_ statements are a boolean true/false:yes/no expression, _For each_ and _Until_ keywords are used for looping, and Unconditional _Branch_ instructions.
+
+When not to use Logic Apps:
+1) No external connections to other apis
+2) You require consistent, high-speed performance
+3) You have complex business logic
+4) You have a complex custom api taht you willl have to create
+
+_Logic App Designer_ gives you a design canvas to create workflows for your logic app.
+
+There are three broad classes of triggers: 
+
+1) Data
+   a) Polling: Runs when new data is available, but only after a poll.  You set-up a frequency and an interval to control how often it will run.
+
+   b) Push: runs immediately when new data is available.  These are implemented by using Webhooks.  The benefit of these is that they do not incur an additional polling cost for checking when new data is available.  Not every connector offers push, but it is generally recommended over polling.
+
+2) Time: Runs on a time schedule
+
+3) Manual: Custom code to invoke logic
+
+Triggers can pass in _Parameters_ and pass back _return values_.
+
 ### Create a Custom Template for Logic Apps
+
+Azure Logic Apps offer over 200 built-in connectors that fall into the following categories:
+1) Built-In Connectors: Have actions and triggers that integrate with Azure Apps and Functions
+2) Managed Connectors: Have triggers and actions that call other services and systems.
+3) Managed API Connectors: Have actions and triggers that integrate with Azure Blob Storage, Office 365, Dynamics, Power BI, and more
+4) On-Premises Connectors: Have actions and triggers that integrate with on-premise installations of SQL Server, Sharepoint Server, Oracle, and File Shares
+5) Integration Account Connectors: Transform and validate XML, encode and decode flat files, and process Business-to-Business (B2B) messages with AS2, EDIFACT, and X12 protocols
+6) Enterprise Connectors: Provide access to enterprise systems such as SAP, IBM, Message Queue, etc.
+
+Custom connectors must implement the OpenAPI definition.  In the WebAPI you can implement the description with either OpenAPI or a Postman collection. You can define the api using the _Swashbuckle Nuget Package_.
+
+```csharp
+using Swashbuckle.AspNetCore.Swagger;
+```
 
 ## Integrate Azure Search within Solutions
 
