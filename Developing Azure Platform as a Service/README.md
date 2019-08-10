@@ -44,6 +44,37 @@ A WebJob that interacts with Azure needs two connection strings that can be adde
 You can also add bindings to avoid hard-coding input and output details in functions by adding them to the _function.json_ file.
 
 ### Enable Diagnostics Logging
+_Applicatin Logs_ are the output of runtime trace statements in application code.  I.e. you might want to check some logic in your code by adding a trace to show when a particular function in being processed.  Application logging has scale limitation, primarily due to the fact that _files_ are being used to save the logged output.  The type of logging avaialable through the Azure App Service depends on the code framework of the app, and whether runnning Windows or Linux.
+
+ASP.Net apps only run on Windows app services.  You use the System.Diagnostics.Trace class to log information to the application diagnostics log.  ASP.Net Core apps can run on either Windows or Linux.  To log information to Azure application logs, you need to use the _logger factory_ class, and then use one of six-log levels.  Node.js apps run on Windows or Linux, and application logging is enabled through the console() method.  Azure Web apps use the Web server (IIS process) to route messages to log files.  Loggng for linux-basaed scripted apps, such as Node, is determined by the Docker image used for the app's container.  Basic logging, using redirections from STDERR or STDOUT, uses the Docker logs.
+
+In addition to application logging, you can also provide additional application monitoring through _Azure Application Insights_.  To use application insights, you have to include specific code within your app, using the Apps Insights SDK (this costs money).  You can also set-up _Metrics_ for your app which show how your app is performing (CPU, memory, network, and file system usage).
+
+Live log streaming is an easy and efficient way to view live logs for troubleshooting purposes.  Live log stream connects to only one app instance.
+
+You can open log streams using the Azure CLI:
+
+```powershell
+az webapp log tail --name \<_app name_\> --resource-group \<_resource group name_\>
+```
+
+To use Curl, you need deployment credentials.. there are two types:
+1) App Level: Azure automatically creates a username/password pair when you deploy a Web app, and each of your apps has their own separate set of credentials.
+2) User Level: You can create your own credentials for use with any Web app; you can manage these credentials in the Azure Portal.
+
+You can use the following azcli command to open a log stream:
+
+```powershell
+curl -u {username} https://{sitename}.scm.azurewebsites.net/api/logstream
+```
+
+For Windows apps, file system log files are stored in a virtual drive that is associated with your Web app.  This drive is addressable as D:\Home, and includes LogFiles folder; within this folder are one or more the following folders:
+1) Application: contains application-generated messages, if File System application logging has been enabled.
+2) DetailedErrors: Contains detailed Web server error logs, 
+3) http: Contains IIS-level logs
+4) W3SVC[number]: contains details of all failed http requests, if Failed request tracing has been enabled.
+
+All Azure Web apps have an associated Source Control Management (SCM) service site.  This site runs the Kudu service, and other site extensions.  Kudu manages deployment and troubleshooting for Azure Web Apps, including options for downloading log files.
 
 ## Create Azure App Service Mobile Apps
 
@@ -132,8 +163,6 @@ Output Binding Types
 12) Twilio - Send text messages
 
 **You can also use the output binding template to make it easier to write data to data sources**
-
-
 
 ### Implement Function Triggers by Using Data Operations, Timers, and Webhooks
 
