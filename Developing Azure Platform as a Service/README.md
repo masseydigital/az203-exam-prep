@@ -78,6 +78,8 @@ All Azure Web apps have an associated Source Control Management (SCM) service si
 
 ## Create Azure App Service Mobile Apps
 
+Mobile backend services need to be able to support data storage, user authentication, data synchronization, and the ability to send notifications to a variety of mobile device types.
+
 ### Add Push Notifications for Mobile Apps
 
 ### Enable Offline Sync for Mobile App
@@ -167,5 +169,102 @@ Output Binding Types
 ### Implement Function Triggers by Using Data Operations, Timers, and Webhooks
 
 ### Implement Durable Functions
+_Durable Functions_ are an extension of Azure Functions that enables you to perform long-lasting, stateful operations in Azure.  Azure provides the infrastructure for maintaining state information.  You can use Durable Functions to orchestrate a long-running workflow.
+
+Benefits of using Durable Functions:
+1) They enable you to write event driven code.  They can wait asynchronously for one or more external events, and then respond to them.
+2) You can chain functions together.  You can implement common patterns such as fan out/in, which uses one function to invoke others in parallel, and then accumulate the results.
+3) You can orchestrate and coordinate functions, and specify the order in which functions should execute.
+4) The state is managed for you.  You don't have to write your own code to save information for a long-running function.
+
+Durable functions allow you to define stateful workflows using an _Orchestration Function_.  They provide the added benefits of:
+1) Defining the workflow in code.  You don't need to write a JSON description or use a workflow design tool.
+2) Functions can be called both synchronously and asynchronously.  Output form the called functions is saved locally in variables and used in subsequent function calls.
+3) Azure checkpoints the progress of a function automatically when the function awaits.  Azure may choose to dehydrate the function and save its state while the function waits, to preserve resources and reduce costs.  When the function starts running again, Azure will rehydrate it and restore its state.
+
+There are three durable function types:
+1) Client: the entry point for creating an instance of a Durable function orchestration.  They can run in response to an event from many sources, such as a new HTTP request arriving, a message being posted to a message queue, an event arriving in an event stream.  
+2) Orchestrator: describe how actions are executed, and the order in which they are run.  You write the logic in code (C# or Javascript).
+3) Activity: are the basic units of work in a durable function orchestration.  An activity function contains the actual work performed by the tasks being orchestrated.
+
+You can use Durable Functions to implement many common workflow patterns, including:
+1) Function Chaining:  The workflow executes a sequence of functions in a specified order.  The output of one function is applied to the input of the next function in the sequence.  The output of the final function formulates the result.
+2) Fan out/Fan in: This pattern runs multiple functions in parallel and then waits for all the functions to finish.  The results of the parallel executions can be aggregated or used to compute the final result.
+3) Async HTTP Apis: Addresses the problem of coordinating state of long-running operations with external client.  An HTTP call can trigger the long-running action.  Then, it can redirect the client to a status endpoint.  The client can learn when the operation is finished by polling this endpoint.
+4) Monitor: A recurring process in a workflow, possibly looking for a change in state.  For example, you could use this pattern to poll until specific conditions are met.
+5) Human Interaction: Combines automated processes that also involve some human interaction.  An example of this is an approval process.
+
+The _moment.js_ library contains date/time functions that you can use with durable functions.
 
 ### Create Azure Function Apps by Using Visual Studio
+You can create Azure Function apps through Visual studio by installing the _Azure Functions and Web Job Tools_ extension.  Azure functions are triggered by an event rather than directly from any applications.
+
+The events available are: 
+1) Blob Trigger:  Occurs when you upload or modify Azure blob storage
+2) Event Hub Trigger: Occurs when Event Hub receives a message.
+3) Azure Cosmos DB Trigger: Occurs when a document is added to, or modified in, an Azure Cosmos DB database.  You can use this trigger to integrate Azure Cosmos DB with other services.
+4) Http Trigger: Occurs when an Http request occurs in a Web App.  You can also trigger to respond to Webhooks.  A _webhook_ is a callback that occurs when an item hosted by a website is modified.  
+5) Queue Trigger: Occurs when a new item is added to an Azure Storage Queue.
+6) Service Bus Queue Trigger: Occurs when a new item is added to an Azure Service Bus Queue
+7) Service Bus Topic Trigger: Occurs in response to a new message arriving on a Service Bus Topic.
+8) Timer Trigger: Occurs on a defined schedule.
+
+Azure currently provides two versions of the runtime environment required to run Azure Functions.  Version 1 uses the .Net Framework 4.7, whereas version 2 runs using the .Net Core 2.
+
+An Azure Function app stores management information, code, and logs in Azure Storage.  The storage account must support Azure Blob, Queue, Files, and Table Storage.
+
+You can restrict access privileges to users performing an HTTP request with the following levels of access:
+1) Anonymous: No authentication is required and any user can trigger the function.
+2) Function: The Http request must provide a key that enables the Azure function runtime to authorize the request.
+3) Admin: This is similar to function in that the user must supply a key with the request, but for this access level the key must be an _admin key_.
+
+Unless you are using an Http request, you must also supply a connection string and other details necessary for the function app to access the resource.
+
+An Azure Function is implemented as a _static_ class.  This static class provides a static, asynchronous method named **Run**, which acts as the entry point for the function.  The parameters passed to the Run method provide the context for the trigger.  All Azure Functions pass in the ILogger parameter which can be used to write log messages, which the function app will write to storage for later analysis.
+
+Example Http Request:
+```csharp
+public static class Function1
+{
+    [FunctionName("Function1")]
+    public static async Task<IActionResult> Run(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+        ILogger log)
+    {
+        log.LogInformation("C# HTTP trigger function processed a request.");
+
+        string name = req.Query["name"];
+
+        string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+        dynamic data = JsonConvert.DeserializeObject(requestBody);
+        name = name ?? data?.name;
+
+        return name != null
+            ? (ActionResult)new OkObjectResult($"Hello, {name}")
+            : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+    }
+}
+```
+
+Example Blob trigger:
+```csharp
+public static class Function2
+{
+    [FunctionName("Function2")]
+    public static void Run([BlobTrigger("samples-workitems/{name}", Connection = "xxxxxxxxxxxxxxxxxxxxxxx")]Stream myBlob, string name, ILogger log)
+    {
+        log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
+    }
+}
+```
+
+Behind the scenes, an Azure Function App is a collection of one or more VM's, running a web server.  In Visual Studio, the Publish Wizard will allocate the resources needed to run your Function app.
+
+You can also set-up Continuous deployment with one of several providers or push a .zip deployment with the following Azure Cli command
+
+```bash
+az functionapp deployment source config-zip \
+-g <resource-group> \
+-n <function-app-name> \
+--src <zip-file>
+```
