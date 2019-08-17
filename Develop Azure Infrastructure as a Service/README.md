@@ -188,10 +188,103 @@ az group deployment validate \
 ## Implement Batch Jobs by using Azure Batch Services
 
 ### Manage Batch Jobs by using Batch Service API
+Azure Batch is intended to make flexible and scalable compute workflows.  The workflows can perform complex calculations and parallelize them to complete them faster.  Azure Batch itself is free, you only need to pay for the services that are spun up by it.
+
+All Azure Batch actions must occur inside an Azure Batch account.  You can provision a storage account to manage file inputs and applications during execution.  Within your Azure Batch account, you can create pools of virtual compute nodes which are managed and scheduled by Azure Batch service.
+
+The Azure Batch service manages the orchestration of a job that is to be completed by Azure Batch.  It will bring online the required nodes and schedule the tasks that need to run on them.  You will use the Azure CLI to create a pool, create worker nodes, create a job, and create tasks.
 
 ### Run a Batch Job by Using Azure CLI, Azure Portal, and other tools
+Azure Batch command take the following form:
+az batch verb --properties
+
+You can cretae an Azure Batch account with the following command:
+
+```powershell
+az batch account create \
+ --name $BATCH_ACCOUNT \
+ --resource-group $RESOURCE_GROUP \
+ --location <choose a location from the list above>
+```
+
+You can sign-in to your Azure Batch account with the following command: 
+
+```powershell
+az batch account login \
+ --name $BATCH_ACCOUNT \
+ --resource-group $RESOURCE_GROUP \
+ --shared-key-auth
+```
+
+You can create a pool of VMs with the following command:
+
+```powershell
+az batch pool create \
+ --id mypool --vm-size Standard_A1_v2 \
+ --target-dedicated-nodes 3 \
+ --image canonical:ubuntuserver:16.04-LTS \
+ --node-agent-sku-id "batch.node.ubuntu 16.04"
+```
+
+You can create a batch job with the following command : 
+
+```powershell
+az batch job create \
+ --id myjob \
+ --pool-id mypool
+```
+
+You can create a batch task with the following command:
+
+```powershell
+for i in {1..10}
+do
+   az batch task create \
+    --task-id mytask$i \
+    --job-id myjob \
+    --command-line "/bin/bash -c 'echo \$(printenv | grep \AZ_BATCH_TASK_ID) processed by; echo \$(printenv | grep \AZ_BATCH_NODE_ID)'"
+done
+```
+
+To delete a batch job : 
+
+```powershell
+az batch job delete --job-id myjob -y
+```
+
+To view the status of a job : 
+```powershell
+az batch task show \
+ --job-id myjob2 \
+ --task-id mytask1
+```
+
+You can visualize how jobs are running by downloading and installing Batch Explorer.
 
 ### Write Code to Run an Azure Batch Services Batch Job
+
+An Azure Batch account contains the following resources: 
+1) Application Package: Used to add applications that can be used by tasks in a Batch.  An Azure Batch account can contain up to 20 application packages.
+2) Pool: Contains compute nodes, which are the engines that run your Batch job.  
+3) Node: Each node can be assigned a number of tasks to run, the tasks are allocated and managed by Azure Batch.
+4) Job: Jobs manage collections of tasks.  A job is associated with a specific pool.  An Azure Batch account can have many jobs.
+5) Task: Tasks run applications.  These can be contained in an application package, o rin an Azure Storage container.  Tasks process input files, an don completion can write to output containers.
+
+Before you manage the Azure Batch services from a .Net application, you have to create the Azure Batch account and Storage account.  You'll need to create a .Net Core console app in the Cloud Shell that uses Azure Batch and Azure Storage client libraries.
+
+There are two NuGet packages you'll need to import into your app.  The first is the Azure Batch client library, Microsoft.Azure.Batch.  You'll use this library to create and delete Azure Batch Pools, create and delete workload jobs, and create and delete tasks, and monitor running tasks.  The next one that you'll need is the Azure Storage client library, Microsoft.Azure.Storage.Blob, which allows you to connect to, and manage, files in an Azure Storage account.  Finally, you will need The Azure Batch Management library, Microsoft.Azure.Management.Batch to manually have your app communicate with your manually created Batch and Storage accounts.
+
+The typical usage pattern for Azure Batch is:
+1) Create a Batch Service account (Batch Management Api)
+2) Create a Storage Account (Storage API)
+3) Create a Blob client to manage file processing (Storage API)
+4) Upload Files to Process (Storage Api)
+5) Create a pool of compute nodes (Batch Api)
+6) Create a job to run on those nodes (Batch Api)
+7) Add a task to the job to run (Batch Api)
+8) Monitor the tasks progress (Batch Api)
+9) Download processed files when finished (Storage Api)
+10) Delete the input storage container, delete the pool, delete the job (Batch Api & Storage Api)
 
 ## Create Containerized Solutions
 
