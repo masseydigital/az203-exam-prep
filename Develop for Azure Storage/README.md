@@ -147,7 +147,7 @@ do
 } while (continuationToken != null);
 ```
 
-You can upload blobs with the following command:
+You can upload blobs with the following command:it 
 ```csharp
 public Task Save(Stream fileStream, string name)
 {
@@ -170,8 +170,20 @@ public Task<Stream> Load(string name)
 }
 ```
 
+You can deploy apps with blobs with the following commands:
+```powershell
+az appservice plan create --name blob-exercise-plan --resource-group [sandbox resource group name] --sku FREE
+az webapp create --name <your-unique-app-name> --plan blob-exercise-plan --resource-group [sandbox resource group name]
+CONNECTIONSTRING=$(az storage account show-connection-string --name <your-unique-storage-account-name> --output tsv)
+az webapp config appsettings set --name <your-unique-app-name> --resource-group [sandbox resource group name] --settings AzureStorageConfig:ConnectionString=$CONNECTIONSTRING AzureStorageConfig:FileContainerName=files
+```
+
 ### Set and retrieve properties and metadata
 
 ### Implement blob leasing
+Concurrency strategies in Azure Blob storage allow you to avoid conflicts when multiple users are viewing and updating content simutaneously.  There are three main concurrency strategies to consider:
+1) Optimistic Concurrency
+2) Pessimistic Concurrency
+3) Last Writer wins: whomever makes the last change to a file, "wins".  This strategy is useful in situations where having the latest data is the most important.  I.e. a stock market ticker.
 
 ### Implement data archiving and retention
