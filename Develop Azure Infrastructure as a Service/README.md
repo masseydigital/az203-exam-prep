@@ -289,6 +289,13 @@ The typical usage pattern for Azure Batch is:
 ## Create Containerized Solutions
 
 ### Create an Azure Managed Kubernetes Service (AKS) Cluster
+A _container_ is an atomic unit of software that packages up code, dependencies, and configurations for a specific application.  Containers allow us to split up monolithic applications into individual services that make up the solution.
+
+_Kubernetes_ is a portable, extensible open-source platform for automating deployment, scaling, and the management of containerized workloads.  Kubernetes abstracts away complex container management and provides us with declarative configuration to orchestrate containers in different compute environments.  To make use of container solutions, you must understand concepts such as microservice architecture, to make optimal use of container solutions.
+
+A Kubernetes deployment is configured as a cluster.  A cluster consists of at least one master machine and three or more worker machines for production deployments.
+
+Azure Kubernetes Service (AKS) manages your hosted Kubernetes environment and makes it simple to deploy and manage containerized applications in Azure.  Your AKS environment is enabled with features such as automatic updates, self-healing, and easy scaling.  AKS clusters can be created in the Azure Portal or by using the Azure CLI.
 
 ### Create Container Images for Solutions
 A Docker image is a prepackaged environment containing the appliciation code and the environment in which the code executes.  Docker is a tool for running containerized apps.  A containerized app includes the app and the file system that makes up the environment in whic it runs.  For example, a containerized app could include a database and other associated software and configuration information needed to run the app.  Containerized apps generally have a smaller footprint than virtual machines configured to run the same function.
