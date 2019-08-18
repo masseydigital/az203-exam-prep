@@ -98,6 +98,16 @@ az storage account create \
   --name <your-unique-storage-account-name>
 ```
 
+You can create a file share in your storage account with the following command:
+```powershell
+az storage share create --name aci-share-demo
+```
+
+You can display files in the fileshare with the following command:
+```powershell
+az storage file list -s aci-share-demo -o table
+```
+
 containers can be created with the following command:
 ```powershell
 az storage container create -h

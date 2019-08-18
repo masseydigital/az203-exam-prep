@@ -16,7 +16,7 @@
 
 ## Instrument Solutions to Support Monitoring and Logging
 
-### Configure instrumentation in an app or service by using Application Inights
+### Configure instrumentation in an app or service by using Application Insights
 
 ### Analyze and troubleshoot solutions by using Azure Monitor
 

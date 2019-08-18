@@ -291,7 +291,140 @@ The typical usage pattern for Azure Batch is:
 ### Create an Azure Managed Kubernetes Service (AKS) Cluster
 
 ### Create Container Images for Solutions
+A Docker image is a prepackaged environment containing the appliciation code and the environment in which the code executes.  Docker is a tool for running containerized apps.  A containerized app includes the app and the file system that makes up the environment in whic it runs.  For example, a containerized app could include a database and other associated software and configuration information needed to run the app.  Containerized apps generally have a smaller footprint than virtual machines configured to run the same function.
+
+You create a containerized app by building an image that contains a set of files and a block of configuration used by Docker.  You run the app by asking Docker to start a container based on the image.
+
+Docker images are stored and made in registries.  A registry is a web service to which Docker can connnect to and upload and download container images.  The most well-known registry is Docker Hub, which is a public registry.  
+
+you can use the docker pull command to retrieve images:
+```bash
+docker pull microsoft/dotnet-samples:aspnetapp
+```
+
+you can run a container with the docker run command:
+```bash
+docker run microsoft/dotnet-samples:aspnetapp
+```
+
+you can remove a docker image with the rm command:
+```bash
+docker image rm microsoft/dotnet-samples:aspnetapp
+```
+
+Changes to files inside of a container only exist for that specific instance of the container.  Data is not shared between containers unless a volume is configured.  Data in a volume also persists after the container is stopped.
+
+A Docker File contains the list of commands necessary to build an image.
 
 ### Publish an image to the Azure Container Registry
+Azure Container Registry is a managed Docker registry service based on the open-source Docker Registry 2.0 Container Registry.  It allows you to build, store, and manage images for all types of container deployments.
 
-### Run containers by using Azure Container Instance or AKS
+You can create an Azure Container Registry with the following command: 
+```powershell
+az acr create --resource-group [sandbox resource group name] --name $ACR_NAME --sku Premium --admin-enabled true
+```
+
+Azure Container registries are private -- they do not support unauthenticated access.  To pull images from an Azure Container Registry repository, you use the docker login command and specify the URL of the login server for the registry.
+
+**The login server URL for a registry in Azure container Registry has the form [registry name].azurecr.io.**
+
+```bash
+docker login myregistry.azurecr.io
+```
+
+You can look up the credentials of your account with the:
+```powershell
+az acr credential show --name myregistry
+```
+
+Images are _pushed_ from your local computer to the Docker registry with the _docker push_ command.  Before you can do this though, you must create an alias for the image that specifies the repository and tag to be created in the Docker registry.  The repository name must be in the form [login-server]/[image-name]:tag.  The aliasing is done through the docker tag command:
+
+```bash
+docker tag myapp:v1 myregistry.azurecr.io/myapp:v1
+```
+
+Once you tag your image, you can push it with the docker push command:
+
+```bash
+docker push myregistry.azurecr.io/myapp:v1
+```
+
+There are two commands that you can run to see what is in a container registry.  The first one is _list_ and shows you everything in the registry, the second one is _show_ and will show you all of the instances tied to a repository in the registry.
+
+```powershell
+az acr repository list --name myregistry
+
+az acr repository show --repository myapp --name myregistry
+```
+
+An Azure Container Instance service can load an image from an Azure Container Registry and run it in Azure.
+
+To deploy a container instance:
+```powershell
+az container create \
+    --resource-group [sandbox resource group name] \
+    --name acr-tasks \
+    --image $ACR_NAME.azurecr.io/helloacrtasks:v1 \
+    --registry-login-server $ACR_NAME.azurecr.io \
+    --ip-address Public \
+    --location eastus \
+    --registry-username <username> \
+    --registry-password <password>
+    --environment-variables \ 
+        COSMOS_DB_ENDPOINT=$COSMOS_DB_ENDPOINT
+        COSMOS_DB_MASTERKEY=$COSMOS_DB_MASTERKEY
+```
+
+**You can pass environment variables to the container by adding the parameters to the create command.  The container will be configured to look for these environment variables on startup.  If you want these variables to be secure, you can modify the parameter name to --secure-environment-variables**
+
+To replicate a registry to another region run:
+
+```powershell
+az acr replication create --registry $ACR_NAME --location japaneast
+```
+
+You can retrieve logs coming from a container with the az container logs command:
+
+```powershell
+az container logs \
+  --resource-group [sandbox resource group name] \
+  --name mycontainer
+```
+
+You can also retrieve container events with the az container attach command
+
+```powershell
+az container attach \
+  --resource-group [sandbox resource group name] \
+  --name mycontainer
+```
+
+You can also start interactive sessions in your container with the az container exec command
+
+```powershell
+az container exec \
+  --resource-group [sandbox resource group name] \
+  --name mycontainer \
+  --exec-command /bin/sh
+```
+
+You can monitor CPU and Memory Usage on your container with the az monitor metrics list command
+
+```powershell
+az monitor metrics list \
+  --resource $CONTAINER_ID \
+  --metric CPUUsage \
+  --output table
+```
+
+You can build images in your Azure Container Registry by uploading the files to Azure and running the acr build command
+
+```powershell
+az acr build --file Dockerfile --registry myregistry --image myimage .
+```
+
+You can configure Container Registry tasks creates long lived tasks that occur such as building your web app when code is committed.
+
+```bash
+az acr task create --registry <container_registry_name> --name buildwebapp --image webimage --context https://github.com/MicrosoftDocs/mslearn-deploy-run-container-app-service.git --branch master --file Dockerfile --git-access-token <access_token>
+```
