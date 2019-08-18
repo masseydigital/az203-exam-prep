@@ -196,4 +196,28 @@ Concurrency strategies in Azure Blob storage allow you to avoid conflicts when m
 2) Pessimistic Concurrency
 3) Last Writer wins: whomever makes the last change to a file, "wins".  This strategy is useful in situations where having the latest data is the most important.  I.e. a stock market ticker.
 
+The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.  The lock duration can be 15 to 60 seconds, or can be infinite.  The Lease Blob operation can be called in one of five modes:
+1) Acquire, to request a new lease
+2) Renew, to renew an existing lease
+3) Change, to change the ID of an existing lease
+4) Release, to free the lease if it no longer needed so that another client may immediately acquire a lease against the blob.
+5) Break, to end the lease but ensure that another client cannot acquire a new lease until the current lease period has expired.
+
+The Lease Blob request may be constructed as follows: 
+
+```powershell
+https://myaccount.blob.core.windows.net/mycontainer/myblob?comp=lease
+timeout
+Authorization
+Date or x-ms-date
+x-ms-version
+x-ms-lease-id: <ID>
+x-ms-lease-action: <acquire ¦ renew ¦ change ¦ release ¦ break>
+x-ms-lease-break-period: N
+x-ms-lease-duration: -1 ¦ N
+x-ms-proposed-lease-id: <ID>
+Origin
+x-ms-client-request-id
+```
+
 ### Implement data archiving and retention

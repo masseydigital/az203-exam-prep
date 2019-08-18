@@ -81,8 +81,53 @@ All Azure Web apps have an associated Source Control Management (SCM) service si
 Mobile backend services need to be able to support data storage, user authentication, data synchronization, and the ability to send notifications to a variety of mobile device types.
 
 ### Add Push Notifications for Mobile Apps
+The Mobile Apps feature of Azure App Service is a collection of Azure services commonly used to support mobile client apps.   It includes data storage, user authentication, and push notfiications.  They are accessible via REST Api or using a microsoft provided API that can be added to your mobile client.  There are two parts to every mobile application (1) the client app and (2) the supporting mobile service on Azure.
+
+Mobile Apps provides a backend service that can be defined using either ASP.Net or node.js.  this allows for OData v3 source that can be linked ot either an Azure SQL Database, or an on-premises hosted SQL server.  This data can be accessed via REST or using a Microsoft provided SDK.
+
+When using the Mobile Apps SDK in your client app to access your data, you will also get a robust API to manage data synchronization between the client mobile app and the cloud data store.  
+
+Mobile Apps includes support for several identify providers.  You can use Azure Active Directory or common client providers including Facebook, Google, Twitter, and Microsoft.  Mobile Apps provides OAuth 2.0 authentication for each.
+
+When using the client SDKs, you can integrate with Azure Notifications Hub to manage and send notifications to your app users.
+
+The client applications are automatically created for iOS, Android, Xamarin, and Apache Cordova.  The client projects includes the Mobile Apps SDK and are configured to work with your instance of the Mobile App Service.
+
+Azure Notification Hubs provide an easy-to-use infrastructure that enables you to send mobile push notifications from any backend to any mobile platform.  
+
+Push notifications are able to notify users when an event has occurred.  On Windows Store and Windows Phone applications, the notification results in a _toast_ (a modeless window appearing at the top of the screen) or with tile updates on the Start screen.  Push notifications are delivered through platform-specific infrastructures called _Platform Notification Systems (PNS)_.
+
+There are 4 main challenges when developing push notification systems
+1) Platform Dependency: Each platform generally has its own interface to send push notifications
+2) Scale: scaling of both token updates and requests to the PNS.
+3) Routing: PNSs provide a way to send a message to a device.  In most apps, however, notifications are targeted at users and/or interest groups.  As such, the app backend must maintain a registry that associates interest groups with device tokens.
+4) Monitoring & Telemetry: Tracking and aggregating the outcomes of millions of notifications is not trivial and it is usually an important component of any solution that uses push notifications.
+
+Notification Hubs aim to alleviate the 4 above challenges.  The Advantage of using Notification Hubs is:
+1) Multi-platform support: Support for all major platforms, i.e. iOS, Android, Windows Phone, etc.
+2) Works with any backend: cloud / on-prem, .Net, php, Java, node
+3) Scale: Notification Hubs scale to millions of devices without the need of re-architecting or sharding.
+4) Rich Delivery Patterns: Broadcast, unicast/multicast, Segmentation
+5) Personalization: Each device can have one or more templates.
+6) Security: Shared Access Secrets (SAS) or federated authentication
+7) Rich Telemetry: Available in the portal and programmatically.
 
 ### Enable Offline Sync for Mobile App
+Offline sync allows end users to interact with a mobile app -- viewing, adding, or modifying data without a network connection.  Changes are stored in a local database.  Once the device is back online, these changes are synced with the remote backend.
+
+The Azure Mobile App offline features allow you to interact with a local database when ou are in an offline scenario.  To use these features in your app, you initialize a _SyncContext_ to a local store.  Then reference your table through the _IMobileServiceSyncTable_ interface.  
+
+When using sync tables, your client code controls when local changes are synchronized with an Azure Mobile App backend.  Nothing is sent to the backend until there is a call to _push_ local changes.  Similarly, the local store is populated with new data only when there is a call to _pull_ data.
+
+_Push_: Push is an operation on the sync context and sends all CUD changes since the last push.  Note that it is not possible to send only an individual table's changes, because otherwise operations could be sent out of order.
+
+_Pull_: Pull is performed on a per-table basis and can be customized with a query to retrieve only a subset of the server data.  The Azure Mobile client SDK then insert the resulting data into the local store.
+
+_Implicit Pushes_:  If a pull is executed against a table that has pending local updates, the pull first executes a _push()_ on the sync context.  This push helps minimize conflicts between changes that are already queued and new data from the server.
+
+_Incremental Sync_: The first parameter to the pull operation is a _query name_ this is used only on the client.
+
+_Purging_: You can clear the contents of the local store using IMobileServiceSyncTable.PurgeAsync.  Purging may be necessary if you have stale data in the client database or if you want to discard all pending chagnes.
 
 ### Implement a Remote Instrumentation Strategy for Mobile Devices
 
