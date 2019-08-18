@@ -70,10 +70,110 @@ Choosing Gremlin as the API provides a graph-based view over the data.  Remember
 ## Develop Solutions that use a Relational Database
 
 ### Provision and Configure Relational Databases
+Azure SQL databases are Platform-as-a-Service (PaaS) meaning they offer much less infrastructure and maintenance to manage.  Azure SQL databases provide CRUD (create, read, update, and delete) operations.  It is preferrable to use Azure SQL over creating VM's and hosting the data due to the overhead the VM is going to have.
+
+When you create an Azure SQL database, you are creating an Azure SQL _logical server_.  This is similar to a container which is holding your databases.  All control logins, firewall rules, and security policies reside on this server.
+
+There are two purchasing models for your Azure SQL Database:
+1) DTU (Database Transaction Unit): combined measure of compute, storage, and IO resources
+2) VCore: independent measures for compute, storage, and IO.
+
+_Collation_ refers to the rules that sort and compare data.  Collation helps you define sorting rules when case sensitivy, accent marks, and other language characteristics are important.
+
+By default, all traffic outside of Azure is blocked by the server firewall.
+
+In Azure Cloud Shell, there are a few commands that you will use to interact with your database
+1) az: Azure CLI, command-line interface for working with Azure resources.  Used to get information about database such as a connection string.
+2) jq: A command-line JSON parser.  You'll pipe output from az commands to this tool to extract important fields from JSON output.
+3) sqlcmd: Enables you to execute statements on SQL Server.  You'll use the _sqlcmd_ command to create an interactive session with your Azure SQL database.
+
+To get information about your database, you can run the following command:
+```powershell
+az sql db show --name Logistics
+```
 
 ### Configure Elastic Pools for Azure SQL Database
+SQL elastic pools are a cost-effective service that can manage and scale multiple Azure SQL databases that have varying and unpredictable resource requirements.  SQL elastic pools are similar to eDTUs - they enable you to buy a set of compute and storage resources that are shared among all the databases in the pool.  each database can use the resource they need within the limits you set, depending on the current load.  SQL elastic pools are ideal for situations where your average usage is low with infrequent, but high utilization spikes.
+
+The general guidance is, if the combined resources you would need for individual databases to meet capacity spikes is more than 1.5 times the capacity required for the elastic pool, then the pool will be cost effective.  It is recommended that you add at least two S3 databases or 15 S0 databases to a single pool for it to have potential cost savings.
+
+Elastic pools can be created from:
+1) Azure Portal
+2) Azure CLI: az sql elastic-pools create, az sql db create --elastic-pool-name [name]
+3) Powershell: New-AzSqlElasticPool cmdlet, Set-AzSqlDatabase cmdlet
+
+First, create an SQL server with the following command:
+
+```powershell
+az sql server create \
+--name $SERVERNAME \
+--resource-group $RESOURCE_GROUP \
+--location $LOCATION \
+--admin-user $ADMIN_LOGIN \
+--admin-password $PASSWORD
+```
+
+Next, add a database to the server with:
+
+```powershell
+az sql db create \
+--resource-group $RESOURCE_GROUP \
+--server $SERVERNAME \
+--name FitnessVancouverDB
+```
 
 ### Create, Read, Update, and Delete data tables by using code
+To get the connection string for an Azure SQL database, use the following command and then run the output to create an interactive session:
+
+```powershell
+az sql db show-connection-string --client sqlcmd --name Logistics
+
+sqlcmd -S tcp:contoso-1.database.windows.net,1433 -d Logistics -U martina -P "password1234$" -N -l 30
+```
+
+Once in the interactive session, you can cretae a table with the following command:
+```sql
+CREATE TABLE Drivers (DriverID int, LastName varchar(255), FirstName varchar(255), OriginCity varchar(255));
+GO
+```
+
+To verify that the table exists you can run the following command:
+
+```sql
+SELECT name FROM sys.tables;
+GO
+```
+
+To add a row to the table (create), run the following command:
+
+```sql
+INSERT INTO Drivers (DriverID, LastName, FirstName, OriginCity) VALUES (123, 'Zirne', 'Laura', 'Springfield');
+GO
+```
+
+To read data from the table, run the following command:
+
+```sql
+SELECT DriverID, OriginCity FROM Drivers;
+GO
+```
+
+To update data in the table, you can use the following command:
+
+```sql
+UPDATE Drivers SET OriginCity='Boston' WHERE DriverID=123;
+GO
+SELECT DriverID, OriginCity FROM Drivers;
+GO
+```
+
+You can delete records from your table with the following command:
+
+```sql
+DELETE FROM Drivers WHERE DriverID=123;
+GO
+```
+
 
 ## Develop Solutions that use Blob Storage
 Blobs give you file storage in the cloud and an API that lets you build apps to access the data.  Blobs are similar to local files, except that they can be accessed from anywhere.  Azure blob strorage _unstructured_, meaning there are no restrictions on the types of data that it can hold.  I.e. a blob can hold a PDF, a JPG, JSON, MP3, etc.  Blobs are generally not appropriate for structured data that needs to be queried frequently.  They do not have indexing features, but can be used in conjunction with databases to store non-queryable data.
