@@ -24,7 +24,7 @@ Some good questions to answer before deploying a VM are:
 6) What sort of CPU, memory, and disk I/O load does the server have?  Is there burst traffic to account for?
 
 A good naming convention for an Azure resource may include: 
-1) Enviornment : dev, prod, QA
+1) Environment : dev, prod, QA
 2) Location : uw (US West)
 3) Instance : 01, 02
 4) Product or Service : service
