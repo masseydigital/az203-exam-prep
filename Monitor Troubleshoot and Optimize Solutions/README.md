@@ -9,6 +9,109 @@
 ## Integrate Caching and Content Delivery within solutions
 
 ### Store and Retrieve data in Azure Redis Cache
+_Caching_ is the act of storing frequently-accessed data in memory that is very close to the application that consumes the data.  Caching is used to increase performance and reduce the load on your servers.  We use Redis to create an in-memory cache that can provide excellent latency and potentially improve performance.
+
+_Redis (REmote DIctionary Server) cache_ is an open-source, in-memory key value pair store.  It's popular because it's fast an dcan store and manipulate common data types such as strings, hashes, and sets.  
+
+Azure Cache for Redis is based on the popular open-source Redis Cache.  It gives you access to a secure, dedicated Redis cache, managed by Microsoft.  A cache created using Azure Cache for Redis is accessible from any application within Azure.  Azure Cache for Redis is typically used to improve the performance of systems that rely heavily on back-end data stores.
+
+Redis supports a variety of data types all oriented around _binary safe strings_.  This means that you can use any binary sequence for a value.  Each data value is associated to a key which can be used to lookup the value from the cache.  Redis works best with smaller values (100k or less), so consider chopping up bigger data into multiple keys.  
+
+Data is stored in Redis in _nodes_ and _clusters_.  Nodes are space in Redis where your data is stored, Clusters are sets of (3) or more nodes that your dataset is split across.
+
+Redis distributes data in 3 ways:
+1) Single Node
+2) Multiple Node
+3) clustered
+
+Redis caching architectures are split across Azure in tiers:
+1) Basic Cache: provides single node Redis caching.  The complete dataset will be stored in a single node.  Used for dev/test.
+2) standard Cache: create multiple node architectures in a two-node primary/secondary configuration.  Support master/slave replication.
+3) Premium: standard tier but data has the ability to persist, take snapshots, and back-up data.  Includes geo-replication and gives you complete access with Azure Virtual Network.
+
+You can create a Redis Cache with the Azure Portal, Azure CLI, or Azure PowerShell.
+
+There are several commands that are supported in Redis:
+1) ping
+2) set [key] [value]
+3) get [key]
+4) exists [key]
+5) type [key]
+6) incr [key]
+7) incrby [key] [amount]
+8) del [key]
+9) flushdb
+
+Redis also provides its own command-line tools to experiment with commands, (redis-cli)
+
+We also need a way to expire values that are stale in our Redis Cache.  This is done by applying _time to live (TTL)_ to a key.  To connect to a Redis Cache, we need the host address, port number, and an access key.
+
+A popular Api for interacting with a Redis Cache is the _StackExchange.Redis_ package from NuGet.
+
+A connection string will look like the following (you can store the value in Azure Key Vault):
+
+```powershell
+[cache-name].redis.cache.windows.net:6380,password=[password-here],ssl=True,abortConnect=False
+```
+
+The main connection object in the StackExchange.Redis Cache is the StackExchange.Redis.ConnectionMultiplexer object.
+
+You can connect to a RedisCache with the following code:
+
+```csharp
+using StackExchange.Redis;
+...
+var connectionString = "[cache-name].redis.cache.windows.net:6380,password=[password-here],ssl=True,abortConnect=False";
+var redisConnection = ConnectionMultiplexer.Connect(connectionString);
+```
+
+Once you have the connection multiplexer, there are (3) primary things that you will want to do:
+1) Access a Redis Database
+2) Make use of the publisher/subscript features of Redis
+3) Access an individual server for maintenance or monitoring purposes
+
+You can access a Redis database with the following code: 
+
+```csharp
+IDatabase db = redisConnection.GetDatabase();
+```
+
+Once you have a connection to the database, you can run commands against it such as the following:
+
+```csharp
+bool wasSet = db.StringSet("favorite:flavor", "i-love-rocky-road");
+
+string value = db.StringGet("favorite:flavor");
+Console.WriteLine(value); // displays: ""i-love-rocky-road""
+```
+
+The IDatabase interface also includes several other methods to interact with the Redis Cache:
+1) CreateBatch
+2) CreateTransaction
+3) KeyDelete
+4) KeyExists
+5) KeyExpire
+6) KeyRename
+7) KeyTimeToLive
+8) KeyType : can be string, list, zset, and hash
+
+You can also pass contextual commands to the Redis server with the Execute or ExecuteAsync methods:
+
+```csharp
+var result = db.Execute("ping");
+Console.WriteLine(result.ToString()); // displays: "PONG"
+```
+
+Once you are done with your connection, you can dispose of the object with the .Dispose() method, or wrap the connection in a using block.
+
+```csharp
+string connectionString = config["CacheConnection"];
+
+using (var cache = ConnectionMultiplexer.Connect(connectionString))
+{
+
+}
+```
 
 ### Develop Code to implement CDNs in solutions
 Azure Content Delivery Networks (CDNs) can help reduce latency and improve performance for high bandwidth content.  A CDN is a network of web servers that cache website content in different geographical locations.  CDNs help to minimize latency by caching website content at point-of-presence (POP) locations that are close to large clusters of users.  The use of a CDN is transparent to users of your site.  CDN's are typically best-suited for applications serving much static content. 
