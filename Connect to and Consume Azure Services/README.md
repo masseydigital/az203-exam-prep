@@ -340,14 +340,147 @@ The following types of objects in Azure can receive and handle events from Event
 ### Implement Solutions that Use Azure Notification Hubs
 
 ### Implement Solutions that use Azure Event Hub
+Azure Event Hubs is a cloud-based event-processing service that's capable of receiving and processing millions of events per second.  Event Hubs acts as a front door for an event pipeline, where it receives incoming data and stores it until processing resources are available.
 
 _Event Hubs_ is an intermediary for the publish-subscribe communication pattern.  Unlike Event Grid, however, it is optimized for extremely high throughput.  It is similar to Event Grids, but provides a few more services.
 
-As Event Hub receives communications, it divides them into partitions.  Partitions are buffers into which the communications are saved.
+An _event_ is a small packet of information (a datagram) that contains a notification.  Events can be published individually, or in batches, but a single publication can't exceed _256 kb_.  Event publishers are any application or device that can send out events using either HPTTPS or Advanced Message Queueing Protocol (AMQP) 1.0.  
 
-Event Hubs can send all your events immediately to Azure Data Lake or Azure Blob storage for inexpensive, permanent persistence.  
+An Event Hub consumer group represents a specific view of an Event Hub data stream.  By using separate consumer groups, multiple subscriber applications can process an event stream independently, and without affecting other applications.  
 
-All publishers are authenticated and issued a token.  This means Event Hubs can accept events from external devices and mobile apps.
+There are two main steps when creating and configuring a new Azure Event Hubs.  The first step is to define an Event Hubs namespace.  The second step is to create an Event Hub in that namespace.  An event hubs namespace is a containing entity for managing one or more Event Hubs.  Creating an Event Hubs namespace typically involves the following:
+1) Defining namespace-level settings.  Capacity, pricing tier, and performance metrics are defined at the namespace leel.   
+2) Selecting a unique name for the namespace:  namespace.servicebus.windows.net
+3) Define Optional Properties - enable kafka, namespace zone redundant, enable auto-inflate, auto-inflate maximum throughput units.
+
+To create a new Event Hubs namespace, you will use the az eventhubs namespace commands.  create, authorization-rule.
+
+There are several mandatory parameters:
+1) Event Hub Name: 1-50 characters, letters, numbers, periods, hyphens, underscore
+2) Partition Count (between 2 and 32) should directly relate to the expected number of concurrent consumers
+3) Message Retention (between 1 and 7) number of days.
+
+Create an event hub with the following command:
+
+```powershell
+az eventhubs namespace create --name $NS_NAME
+```
+
+Fetch the connection string for your Event Hubs namespace with the following command:
+
+```powershell
+az eventhubs namespace authorization-rule keys list --name RootManageSharedAccessKey --namespace-name $NS_NAME
+```
+
+Create the event hub with:
+
+```powershell
+az eventhubs eventhub create --name $HUB_NAME --namespace-name $NS_NAME
+```
+
+You can start programming in .Net for EventHubs with the Microsoft.Azure.EventHubs .Net core library in NuGet.
+
+To send events with event hub you can use the following code:
+
+```csharp
+namespace SampleSender
+ {
+     using System;
+     using System.Text;
+     using System.Threading.Tasks;
+     using Microsoft.Azure.EventHubs;
+
+     public class Program
+     {
+         private static EventHubClient eventHubClient;
+         private const string EventHubConnectionString = "{Event Hubs connection string}";
+         private const string EventHubName = "{Event Hub path/name}";
+
+         public static void Main(string[] args)
+         {
+             MainAsync(args).GetAwaiter().GetResult();
+         }
+
+         private static async Task MainAsync(string[] args)
+         {
+             // Creates an EventHubsConnectionStringBuilder object from the connection string, and sets the EntityPath.
+             // Typically, the connection string should have the entity path in it, but for the sake of this simple scenario
+             // we are using the connection string from the namespace.
+             var connectionStringBuilder = new EventHubsConnectionStringBuilder(EventHubConnectionString)
+             {
+                 EntityPath = EventHubName
+             };
+
+             eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
+
+             await SendMessagesToEventHub(100);
+
+             await eventHubClient.CloseAsync();
+
+             Console.WriteLine("Press ENTER to exit.");
+             Console.ReadLine();
+         }
+
+         // Uses the event hub client to send 100 messages to the event hub.
+         private static async Task SendMessagesToEventHub(int numMessagesToSend)
+         {
+             for (var i = 0; i < numMessagesToSend; i++)
+             {
+                 try
+                 {
+                     var message = $"Message {i}";
+                     Console.WriteLine($"Sending message: {message}");
+                     await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(message)));
+                 }
+                 catch (Exception exception)
+                 {
+                     Console.WriteLine($"{DateTime.Now} > Exception: {exception.Message}");
+                 }
+
+                 await Task.Delay(10);
+             }
+
+             Console.WriteLine($"{numMessagesToSend} messages sent.");
+         }
+     }
+ }
+```
+
+To receive events, you can uase the EventProcessorHost class.
+
+```csharp
+public class SimpleEventProcessor : IEventProcessor
+{
+    public Task CloseAsync(PartitionContext context, CloseReason reason)
+    {
+        Console.WriteLine($"Processor Shutting Down. Partition '{context.PartitionId}', Reason: '{reason}'.");
+        return Task.CompletedTask;
+    }
+
+    public Task OpenAsync(PartitionContext context)
+    {
+        Console.WriteLine($"SimpleEventProcessor initialized. Partition: '{context.PartitionId}'");
+        return Task.CompletedTask;
+    }
+
+    public Task ProcessErrorAsync(PartitionContext context, Exception error)
+    {
+        Console.WriteLine($"Error on Partition: {context.PartitionId}, Error: {error.Message}");
+        return Task.CompletedTask;
+    }
+
+    public Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
+    {
+        foreach (var eventData in messages)
+        {
+            var data = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
+            Console.WriteLine($"Message received. Partition: '{context.PartitionId}', Data: '{data}'");
+        }
+
+        return context.CheckpointAsync();
+    }
+}
+``` 
 
 ## Develop Message-Based Solutions
 
